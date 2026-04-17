@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { ThemeProvider } from "@/components/theme/theme-provider";
+import { getPublicationConfig } from "@/utilities/publication";
 import "./globals.css";
 
 const sourceSans = Source_Sans_3({
@@ -16,10 +17,29 @@ const playfairDisplay = Playfair_Display({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Vercel Daily",
-  description: "Vercel Partner Certification Project",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const publication = await getPublicationConfig();
+
+  return {
+    applicationName: publication.publicationName,
+    title: {
+      default: publication.seo.defaultTitle,
+      template: publication.seo.titleTemplate,
+    },
+    description: publication.seo.defaultDescription,
+    openGraph: {
+      title: publication.seo.defaultTitle,
+      description: publication.seo.defaultDescription,
+      type: "website",
+      siteName: publication.publicationName,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: publication.seo.defaultTitle,
+      description: publication.seo.defaultDescription,
+    },
+  };
+}
 
 export default function RootLayout({
   children,

@@ -49,8 +49,8 @@ export const Hero: React.FC = async () => {
           <Image
             src={hero.image}
             alt={hero.title}
-            fill
             priority
+						fill
             sizes="(min-width: 1024px) 50vw, 100vw"
             className="object-contain"
           />

@@ -5,11 +5,11 @@ import { SearchResults } from "@/components/search/search-results";
 import { SearchResultsSkeleton } from "@/components/search/search-results-skeleton";
 
 export const metadata: Metadata = {
-  title: "Search | Vercel Daily",
+  title: "Search",
   description:
     "Search the Vercel Daily archive by keyword and category to find articles, changelog entries, and engineering deep-dives.",
   openGraph: {
-    title: "Search | Vercel Daily",
+    title: "Search",
     description:
       "Search the Vercel Daily archive by keyword and category to find articles, changelog entries, and engineering deep-dives.",
     type: "website",

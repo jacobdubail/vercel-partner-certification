@@ -66,6 +66,11 @@ type ArticleResponse = {
   data: Article;
 };
 
+type TrendingArticlesResponse = {
+  success: boolean;
+  data: Article[];
+};
+
 type BreakingNewsResponse = {
   success: boolean;
   data: BreakingNews | null;
@@ -157,10 +162,9 @@ export async function getArticle(idOrSlug: string): Promise<Article | null> {
 }
 
 /**
- * Latest articles minus an excluded slug, useful for "trending" / "more from"
- * sidebars that should never include the article currently being viewed.
- * Over-fetches by one so the result still hits the requested limit when the
- * excluded article happens to be in the latest list.
+ * Fetch trending articles from the dedicated API endpoint. The API accepts an
+ * optional `exclude` slug so the article detail page can avoid recommending the
+ * piece the reader is already on.
  */
 export async function getTrendingArticles({
   excludeSlug,
@@ -173,7 +177,14 @@ export async function getTrendingArticles({
   cacheLife("hours");
   cacheTag("articles");
 
-  const res = await getArticles({ limit: limit + 1 });
+  const query = new URLSearchParams();
+  if (excludeSlug) {
+    query.set("exclude", excludeSlug);
+  }
+
+  const res = await api<TrendingArticlesResponse>(
+    `articles/trending${query.size > 0 ? `?${query.toString()}` : ""}`,
+  );
   return res.data
     .filter((article) => article.slug !== excludeSlug)
     .slice(0, limit);
@@ -204,4 +215,32 @@ export async function getHomeArticles(): Promise<{
     .slice(0, 6);
 
   return { hero, grid };
+}
+
+/**
+ * Build-time helper for article-route SSG. Fetches every page of article list
+ * data and returns the canonical slugs we link to throughout the app.
+ */
+export async function getAllArticleSlugs(): Promise<string[]> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("articles");
+
+  const PAGE_SIZE = 100;
+  const firstPage = await getArticles({ page: 1, limit: PAGE_SIZE });
+
+  if (firstPage.meta.pagination.totalPages <= 1) {
+    return firstPage.data.map((article) => article.slug);
+  }
+
+  const remainingPages = await Promise.all(
+    Array.from(
+      { length: firstPage.meta.pagination.totalPages - 1 },
+      (_, index) => getArticles({ page: index + 2, limit: PAGE_SIZE }),
+    ),
+  );
+
+  return [firstPage, ...remainingPages]
+    .flatMap((page) => page.data.map((article) => article.slug))
+    .filter((slug, index, allSlugs) => allSlugs.indexOf(slug) === index);
 }

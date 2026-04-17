@@ -8,11 +8,16 @@ import { FeaturedImage } from "@/components/article/featured-image";
 import { SubscribeCTA } from "@/components/article/subscribe-cta";
 import { TrendingArticles } from "@/components/trending/trending-articles";
 import { TrendingArticlesSkeleton } from "@/components/trending/trending-articles-skeleton";
-import { getArticle } from "@/utilities/articles";
+import { getAllArticleSlugs, getArticle } from "@/utilities/articles";
 
 type ArticlePageProps = {
   params: Promise<{ param: string }>;
 };
+
+export async function generateStaticParams(): Promise<Array<{ param: string }>> {
+  const slugs = await getAllArticleSlugs();
+  return slugs.map((param) => ({ param }));
+}
 
 export async function generateMetadata({
   params,
