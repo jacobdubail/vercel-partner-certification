@@ -16,11 +16,13 @@ export const metadata: Metadata = {
   },
 };
 
+type SearchParams = {
+  q?: string;
+  category?: string;
+};
+
 type SearchPageProps = {
-  searchParams: Promise<{
-    q?: string;
-    category?: string;
-  }>;
+  searchParams: Promise<SearchParams>;
 };
 
 function FilterFormSkeleton() {
@@ -33,11 +35,41 @@ function FilterFormSkeleton() {
   );
 }
 
-export default async function SearchPage({ searchParams }: SearchPageProps) {
+/**
+ * Thin async wrappers around each child of the Suspense boundaries below.
+ * Awaiting `searchParams` at the page level would block prerendering the
+ * whole route under `cacheComponents`; by moving the await into Suspense
+ * leaves, the static shell (heading, layout, skeletons) streams immediately.
+ */
+async function FilterFormAsync({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
   const { q: rawQ, category: rawCategory } = await searchParams;
-  const q = (rawQ ?? "").trim();
-  const category = (rawCategory ?? "").trim();
+  return (
+    <FilterForm
+      defaultQ={(rawQ ?? "").trim()}
+      defaultCategory={(rawCategory ?? "").trim()}
+    />
+  );
+}
 
+async function SearchResultsAsync({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
+  const { q: rawQ, category: rawCategory } = await searchParams;
+  return (
+    <SearchResults
+      q={(rawQ ?? "").trim()}
+      category={(rawCategory ?? "").trim()}
+    />
+  );
+}
+
+export default function SearchPage({ searchParams }: SearchPageProps) {
   return (
     <section className="mx-auto mb-20 max-w-7xl scroll-mt-24 px-4 py-10 sm:px-10">
       <header className="mb-8">
@@ -52,12 +84,12 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
       <div className="mb-10">
         <Suspense fallback={<FilterFormSkeleton />}>
-          <FilterForm defaultQ={q} defaultCategory={category} />
+          <FilterFormAsync searchParams={searchParams} />
         </Suspense>
       </div>
 
-      <Suspense key={`${q}|${category}`} fallback={<SearchResultsSkeleton />}>
-        <SearchResults q={q} category={category} />
+      <Suspense fallback={<SearchResultsSkeleton />}>
+        <SearchResultsAsync searchParams={searchParams} />
       </Suspense>
     </section>
   );

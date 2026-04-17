@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { HeaderActions } from "@/components/layout/header-actions";
+import { HeaderActionsSkeleton } from "@/components/layout/header-actions-skeleton";
 import { NavLink } from "@/components/layout/nav-link";
-import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { VercelLogo } from "@/components/layout/vercel-logo";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 export const Header: React.FC = () => {
   return (
@@ -19,16 +21,24 @@ export const Header: React.FC = () => {
           </span>
         </Link>
 
-        <nav aria-label="Primary" className="flex items-center gap-6">
-          <NavLink href={{ pathname: "/" }} exact>
-            Home
-          </NavLink>
-          <NavLink href={{ pathname: "/search" }}>Search</NavLink>
-        </nav>
+        <Suspense
+          fallback={
+            <nav aria-label="Primary" className="flex items-center gap-6" />
+          }
+        >
+          <nav aria-label="Primary" className="flex items-center gap-6">
+            <NavLink href={{ pathname: "/" }} exact>
+              Home
+            </NavLink>
+            <NavLink href={{ pathname: "/search" }}>Search</NavLink>
+          </nav>
+        </Suspense>
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <HeaderActions />
+          <Suspense fallback={<HeaderActionsSkeleton />}>
+            <HeaderActions />
+          </Suspense>
         </div>
       </div>
     </header>

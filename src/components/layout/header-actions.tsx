@@ -1,19 +1,37 @@
+import { subscribe, unsubscribe } from "@/app/actions/subscription";
+import { SubscribeButton } from "@/components/article/subscribe-button";
+import { UnsubscribeButton } from "@/components/layout/unsubscribe-button";
+import { getSubscription } from "@/utilities/subscription";
+
 /**
- * Placeholder for the subscription action slot in the header. Will be replaced
- * by a real Subscribe / Unsubscribe control once paywall + cookie session work
- * lands. Renders a non-interactive stub today so the header layout matches its
- * future shape and doesn't shift when subscription state arrives.
+ * Subscription indicator in the header. Flips between a Subscribe form and an
+ * Unsubscribe form based on the cookie. Intentionally does not use a badge —
+ * per the exercise spec, the header shows an actionable toggle so the user can
+ * exit their subscribed state with one click.
+ *
+ * Must be awaited inside a Suspense boundary in `Header` because
+ * `getSubscription()` reads cookies under `cacheComponents`.
  */
-export const HeaderActions: React.FC = () => {
+const BUTTON_CLASS =
+  "font-eyebrow inline-flex h-9 items-center justify-center rounded-md bg-foreground px-3 text-background transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground disabled:opacity-60";
+
+export const HeaderActions: React.FC = async () => {
+  const { isSubscribed } = await getSubscription();
+
+  if (isSubscribed) {
+    return (
+      <form
+        action={unsubscribe}
+        aria-label="Cancel your Vercel Daily subscription"
+      >
+        <UnsubscribeButton className={BUTTON_CLASS} />
+      </form>
+    );
+  }
+
   return (
-    <button
-      type="button"
-      disabled
-      aria-disabled
-      title="Subscriptions coming soon"
-      className="font-eyebrow inline-flex h-9 items-center justify-center rounded-md bg-foreground px-3 text-background opacity-60"
-    >
-      Subscribe
-    </button>
+    <form action={subscribe} aria-label="Subscribe to Vercel Daily">
+      <SubscribeButton className={BUTTON_CLASS} />
+    </form>
   );
 };

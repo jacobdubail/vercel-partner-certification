@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ArticleBody } from "@/components/article/article-body";
+import { ArticleBodySkeleton } from "@/components/article/article-body-skeleton";
 import { ArticleHeader } from "@/components/article/article-header";
 import { FeaturedImage } from "@/components/article/featured-image";
 import { SubscribeCTA } from "@/components/article/subscribe-cta";
@@ -52,10 +53,14 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
       <article className="mx-auto flex max-w-3xl flex-col gap-8 px-4 py-12 sm:px-10">
         <ArticleHeader article={article} />
         <FeaturedImage article={article} />
-        <ArticleBody article={article} />
+        <Suspense fallback={<ArticleBodySkeleton />}>
+          <ArticleBody article={article} />
+        </Suspense>
       </article>
 
-      <SubscribeCTA />
+      <Suspense fallback={null}>
+        <SubscribeCTA />
+      </Suspense>
 
       <Suspense fallback={<TrendingArticlesSkeleton />}>
         <TrendingArticles excludeSlug={article.slug} />

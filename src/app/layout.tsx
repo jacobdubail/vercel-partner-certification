@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Playfair_Display, Source_Sans_3 } from "next/font/google";
+import { Playfair_Display, Source_Sans_3 } from "next/font/google";
 import type { ReactNode } from "react";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
@@ -8,14 +8,6 @@ import "./globals.css";
 
 const sourceSans = Source_Sans_3({
   variable: "--font-source-sans",
-  subsets: ["latin"],
-});
-
-// TODO: drop Geist Mono + the --font-mono token once the /articles/[param]
-// stub is replaced with real article rendering. It's only kept now for the
-// route stub's `font-mono` styling and has no long-term role in the design.
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
@@ -38,7 +30,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${sourceSans.variable} ${geistMono.variable} ${playfairDisplay.variable} h-full antialiased`}
+      className={`${sourceSans.variable} ${playfairDisplay.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
         <ThemeProvider

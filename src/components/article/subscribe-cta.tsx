@@ -1,31 +1,44 @@
+import { subscribe } from "@/app/actions/subscription";
+import { SubscribeButton } from "@/components/article/subscribe-button";
+import { getSubscription } from "@/utilities/subscription";
+
 /**
- * Full-width subscribe call-to-action. Currently always renders since there is
- * no subscription state in the app yet — once cookie-backed sessions exist this
- * component will return null when the visitor is already subscribed. The button
- * is non-interactive today (paired with HeaderActions' Subscribe stub) and will
- * become a Server-Action-driven form in the paywall pass.
+ * Paywall CTA. Doubles as the visual "unlock" below the faded teaser in
+ * `ArticleBody` — the negative top margin pulls the banner flush under the
+ * fade so the gradient reads as a single unit with this banner. For
+ * subscribers, this component is a no-op (returns null) so subscribed readers
+ * see the article uninterrupted.
+ *
+ * Must be awaited inside a Suspense boundary on the article route because
+ * `getSubscription()` reads cookies under `cacheComponents`.
  */
-export const SubscribeCTA: React.FC = () => {
+export const SubscribeCTA: React.FC = async () => {
+  const { isSubscribed } = await getSubscription();
+
+  if (isSubscribed) {
+    return null;
+  }
+
   return (
-    <aside className="border-y border-border bg-foreground text-background">
+    <aside className="-mt-8 border-y border-border bg-foreground text-background">
       <div className="mx-auto flex max-w-3xl flex-col items-center gap-4 px-4 py-12 text-center sm:px-10">
         <span className="font-eyebrow text-background/70">Subscribe</span>
         <h2 className="font-serif text-2xl font-semibold tracking-tight sm:text-3xl">
-          Keep up with the platform powering modern apps.
+          Keep reading with a Vercel Daily subscription.
         </h2>
         <p className="max-w-xl text-base leading-relaxed text-background/80">
-          Vercel Daily delivers the latest changelog releases, engineering
-          deep-dives, and customer stories straight to your reading list.
+          Unlock the full article plus every changelog release, engineering
+          deep-dive, and customer story we publish.
         </p>
-        <button
-          type="button"
-          disabled
-          aria-disabled
-          title="Subscriptions coming soon"
-          className="font-eyebrow inline-flex h-10 items-center justify-center rounded-md bg-background px-5 text-foreground opacity-80"
+        <form
+          action={subscribe}
+          aria-label="Subscribe to read the rest of this article"
         >
-          Subscribe to Vercel Daily
-        </button>
+          <SubscribeButton
+            label="Subscribe to Vercel Daily"
+            className="font-eyebrow inline-flex h-10 items-center justify-center rounded-md bg-background px-5 text-foreground transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-background disabled:opacity-60"
+          />
+        </form>
       </div>
     </aside>
   );

@@ -12,11 +12,13 @@ context from code.
 A Next.js 16 App Router news site powered by the Vercel Daily News API
 (`VERCEL_DAILY_NEWS_BYPASS` + `API_BASE` env vars). Three top-level routes:
 
-| Route | Status |
-| --- | --- |
-| `/` (homepage) | ✅ implemented |
-| `/search` | ✅ implemented |
+
+| Route                                              | Status        |
+| -------------------------------------------------- | ------------- |
+| `/` (homepage)                                     | ✅ implemented |
+| `/search`                                          | ✅ implemented |
 | `/articles/[param]` (detail, `param` = id or slug) | ✅ implemented |
+
 
 Paywall / subscription flow is deliberately **stubbed** — `SubscribeCTA` and
 `HeaderActions` render disabled placeholders. The data-fetch seam (`ArticleBody`)
@@ -34,8 +36,8 @@ is already in place for the future paywall.
 - **TypeScript strict** — `noImplicitAny`, `strictNullChecks`, `noUnusedParameters`
 - **Tailwind CSS v4** with `@custom-variant dark` (class-based dark mode)
 - **Biome** for lint + format
-- **`next-themes`** — light/dark/system toggle
-- **`react-markdown`** — inline markdown in article content (images disabled for XSS safety)
+- `**next-themes`** — light/dark/system toggle
+- `**react-markdown**` — inline markdown in article content (images disabled for XSS safety)
 
 ---
 
@@ -46,12 +48,12 @@ is already in place for the future paywall.
 Three top-level `Suspense` boundaries stream in parallel:
 
 1. **Breaking News Banner** — from breaking-news API. Resolves `articleId` →
-   canonical slug via `getArticle()` before linking. Hides gracefully if API
+  canonical slug via `getArticle()` before linking. Hides gracefully if API
    returns nothing.
 2. **Hero** — `featured[0]` if available, falls back to `latest[0]`. Image,
-   title, excerpt, CTA to article.
+  title, excerpt, CTA to article.
 3. **Featured Articles grid** — 6 unique articles. Deduped against the Hero so
-   the hero article never appears twice on the page.
+  the hero article never appears twice on the page.
 
 ### 3.2 Search (`/search`)
 
@@ -64,7 +66,7 @@ Three top-level `Suspense` boundaries stream in parallel:
 - Heading hierarchy: h1 "Search" → h2 "Recent articles"/"Results"/"No results" → h3 per card.
 - `role="status" aria-live="polite"` on the count and empty-state container.
 - URL is source of truth (`router.replace`); no `startTransition`, so the
-  Suspense skeleton shows on every nav — visible loading feedback.
+Suspense skeleton shows on every nav — visible loading feedback.
 - **No pagination** (not required by spec).
 
 ### 3.3 Article detail (`/articles/[param]`)
@@ -72,7 +74,7 @@ Three top-level `Suspense` boundaries stream in parallel:
 - `param` accepts either id or slug; `getArticle()` is id/slug-agnostic.
 - `notFound()` when the API returns null.
 - `generateMetadata()` populates SEO + Open Graph (`article` type, author,
-  published time, image).
+published time, image).
 - Layout:
   1. `ArticleHeader` — eyebrow category, h1 title, excerpt, author, date
   2. `FeaturedImage` — `next/image` with `priority`
@@ -81,10 +83,10 @@ Three top-level `Suspense` boundaries stream in parallel:
   5. `TrendingArticles` inside `Suspense` — 4 articles excluding current slug
 - Body is wrapped in `max-w-3xl` for prose readability.
 - `ArticleContent` renders typed `ContentBlock` unions:
-  `paragraph`, `heading` (2/3), `blockquote`, `unordered-list`,
-  `ordered-list`, `image`. Inline markdown via `InlineMarkdown` with
-  `react-markdown` allowing only `a`, `strong`, `em`, `code`. **`img` is
-  explicitly disallowed** (corpus contains XSS-style markdown images).
+`paragraph`, `heading` (2/3), `blockquote`, `unordered-list`,
+`ordered-list`, `image`. Inline markdown via `InlineMarkdown` with
+`react-markdown` allowing only `a`, `strong`, `em`, `code`. `**img` is
+explicitly disallowed** (corpus contains XSS-style markdown images).
 
 ---
 
@@ -122,7 +124,7 @@ Explicit, greppable, tree-shake-friendly.
 
 **Skeletons live next to the component they fall back for.** No `skeletons/` directory.
 
-**`article-card/` is top-level** (not inside `shared/`) because it's the one truly shared component. Promotion rule: 2+ consumers = out of a feature folder.
+`**article-card/` is top-level** (not inside `shared/`) because it's the one truly shared component. Promotion rule: 2+ consumers = out of a feature folder.
 
 ### 4.2 Data layer (`src/utilities/articles.ts`)
 
@@ -140,7 +142,7 @@ Key fetchers:
 ### 4.3 Route data flow
 
 - Pages are async RSCs that don't `await` in the body — they render `<Suspense>` boundaries immediately.
-- Each Suspense child is async and awaits its own `get*` fetcher.
+- Each Suspense child is async and awaits its own `get`* fetcher.
 - `loading.tsx` is used only for the article detail page (route-level fallback).
 
 ---
@@ -151,7 +153,7 @@ Key fetchers:
 
 - **Headlines:** Playfair Display (`font-serif`, `--font-playfair-display`).
 - **Body:** Source Sans 3 (`font-sans`, `--font-source-sans`).
-- **Code / mono:** Geist Mono (`font-mono`). **TODO:** remove once the mono-styled article-route stub is gone.
+- **Code / mono:** Tailwind default `font-mono` stack (ui-monospace, SF Mono, …). Used for `<code>` in article body and the error digest in `ErrorFallback`. No custom mono font loaded.
 
 ### 5.2 UI chrome — `font-eyebrow`
 
@@ -220,24 +222,21 @@ npx tsc --noEmit   # type check
 High-signal items for future sessions:
 
 1. **Subscription / paywall**
-   - Wire `HeaderActions` "Subscribe" button to real auth/signup flow.
-   - `ArticleBody` is already the seam for gated-content rendering.
-   - `SubscribeCTA` conditional visibility rules.
-2. **Remove Geist Mono** once the article-route-stub styling that uses it is gone.
-3. **Error boundaries** — currently only `loading.tsx` on article detail. Add `error.tsx` per route.
-4. **404 page** (`src/app/not-found.tsx`) — currently uses default.
-5. **Tests** — no test harness yet. Consider Vitest + Playwright for E2E on the three routes.
-6. **Deploy** — Vercel deploy + `revalidateTag` hooks for `articles` / `breaking-news` tags.
-7. **Open Graph image generation** (`opengraph-image.tsx`).
+  - Wire `HeaderActions` "Subscribe" button to real auth/signup flow.
+  - `ArticleBody` is already the seam for gated-content rendering.
+  - `SubscribeCTA` conditional visibility rules.
+2. **Tests** — no test harness yet. Consider Vitest + Playwright for E2E on the three routes.
+3. **Deploy** — Vercel deploy + `revalidateTag` hooks for `articles` / `breaking-news` tags.
+4. **Open Graph image generation** (`opengraph-image.tsx`).
 
 ---
 
 ## 9. Important gotchas
 
 - **Next.js 16 breaking changes.** APIs may differ from training data — read `node_modules/next/dist/docs/` before writing new route features.
-- **`typedRoutes`** complains about dynamic query strings. Current workaround: `// @ts-expect-error` on `router.replace(buildSearchHref(...))` in `search-form.tsx`.
-- **`cacheComponents`** means all data reads must be inside functions with `"use cache"`. Adding a fetch without that directive will break the build.
-- **`react-markdown`'s image XSS vector.** The API corpus includes markdown like `![x](javascript:...)`. `InlineMarkdown` allowlists only `a`, `strong`, `em`, `code`. Don't relax this without a DOMPurify layer.
+- `**typedRoutes`** complains about dynamic query strings. Current workaround: `// @ts-expect-error` on `router.replace(buildSearchHref(...))` in `search-form.tsx`.
+- `**cacheComponents**` means all data reads must be inside functions with `"use cache"`. Adding a fetch without that directive will break the build.
+- `**react-markdown`'s image XSS vector.** The API corpus includes markdown like `![x](javascript:...)`. `InlineMarkdown` allowlists only `a`, `strong`, `em`, `code`. Don't relax this without a DOMPurify layer.
 - **Auto-search behavior.** 3-char minimum + 300ms debounce. Clearing the input (empty string) also triggers a search to reset results. Don't change to `onBlur` or form-only submit without confirming with the spec.
 
 ---
@@ -248,3 +247,4 @@ High-signal items for future sessions:
 - Base: `main`
 - HEAD: `e1f2613` — *Scaffold Vercel Daily news site* (root commit, pushed to `origin`)
 - Tracking: set to `origin/cursor/news-site-scaffold`
+

@@ -8,7 +8,7 @@ type TrendingArticlesProps = {
 export const TrendingArticles: React.FC<TrendingArticlesProps> = async ({
   excludeSlug,
 }) => {
-  const articles = await getTrendingArticles({ excludeSlug, limit: 4 });
+  const articles = await getTrendingArticles({ excludeSlug, limit: 3 });
 
   if (articles.length === 0) {
     return null;
@@ -21,7 +21,7 @@ export const TrendingArticles: React.FC<TrendingArticlesProps> = async ({
           Trending now
         </h2>
       </div>
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {articles.map((article) => (
           <ArticleCard key={article.id} article={article} />
         ))}

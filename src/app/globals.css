@@ -35,7 +35,6 @@
   --color-border: var(--border);
   --color-muted-foreground: var(--muted-foreground);
   --font-sans: var(--font-source-sans);
-  --font-mono: var(--font-geist-mono);
   --font-serif: var(--font-playfair-display);
 }
 

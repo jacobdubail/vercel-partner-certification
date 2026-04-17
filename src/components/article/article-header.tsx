@@ -19,9 +19,6 @@ export const ArticleHeader: React.FC<ArticleHeaderProps> = ({ article }) => {
       <h1 className="font-serif text-3xl font-semibold leading-tight tracking-tight text-foreground sm:text-4xl lg:text-5xl">
         {article.title}
       </h1>
-      <p className="text-lg leading-relaxed text-muted-foreground">
-        {article.excerpt}
-      </p>
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border pt-4 text-sm text-muted-foreground">
         <span className="font-medium text-foreground">
           {article.author.name}
