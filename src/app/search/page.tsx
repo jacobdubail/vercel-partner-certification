@@ -61,11 +61,20 @@ async function SearchResultsAsync({
   searchParams: Promise<SearchParams>;
 }) {
   const { q: rawQ, category: rawCategory } = await searchParams;
+  const q = (rawQ ?? "").trim();
+  const category = (rawCategory ?? "").trim();
+
+  /**
+   * Key the inner Suspense boundary by the current search state so every
+   * router.replace on `/search` remounts the results subtree and shows the
+   * fallback immediately. Without this, React can keep the previous results
+   * visible while the new async payload resolves, which weakens the required
+   * "visual feedback while a search is being performed" behavior.
+   */
   return (
-    <SearchResults
-      q={(rawQ ?? "").trim()}
-      category={(rawCategory ?? "").trim()}
-    />
+    <Suspense key={`${q}|${category}`} fallback={<SearchResultsSkeleton />}>
+      <SearchResults q={q} category={category} />
+    </Suspense>
   );
 }
 
@@ -91,6 +100,8 @@ export default function SearchPage({ searchParams }: SearchPageProps) {
       <Suspense fallback={<SearchResultsSkeleton />}>
         <SearchResultsAsync searchParams={searchParams} />
       </Suspense>
+
+			<p className="mt-12"><em>Pagination would go here</em></p>
     </section>
   );
 }

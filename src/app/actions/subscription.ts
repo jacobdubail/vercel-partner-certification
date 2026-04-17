@@ -1,5 +1,6 @@
 "use server";
 
+import { refresh } from "next/cache";
 import { cookies } from "next/headers";
 import { ApiResponseError } from "@/utilities/api";
 import {
@@ -15,9 +16,9 @@ import {
  * unsubscribes so a repeat visitor reactivates their existing subscription
  * instead of accumulating abandoned tokens.
  *
- * No `revalidatePath` / `revalidateTag` needed: the Server Action response
- * re-renders the current route automatically, and cached article data is
- * user-agnostic so the existing cache tags stay intact.
+ * After mutating the remote subscription state, we call `refresh()` so the
+ * current route's server-rendered leaves (header actions, paywall seam, CTA)
+ * re-read cookies + API state immediately.
  */
 
 const COOKIE_OPTIONS = {
@@ -36,6 +37,7 @@ export async function subscribe() {
   if (existingToken) {
     try {
       await activateSubscription(existingToken);
+      refresh();
       return;
     } catch (error) {
       // Any error other than "token no longer exists" is a real failure.
@@ -49,18 +51,24 @@ export async function subscribe() {
   const record = await createSubscription();
   await activateSubscription(record.token);
   store.set(SUBSCRIPTION_TOKEN_COOKIE, record.token, COOKIE_OPTIONS);
+  refresh();
 }
 
 export async function unsubscribe() {
   const store = await cookies();
   const token = store.get(SUBSCRIPTION_TOKEN_COOKIE)?.value;
-  if (!token) return;
+  if (!token) {
+    refresh();
+    return;
+  }
 
   try {
     await deactivateSubscription(token);
+    refresh();
   } catch (error) {
     if (error instanceof ApiResponseError && error.status === 404) {
       store.delete(SUBSCRIPTION_TOKEN_COOKIE);
+      refresh();
       return;
     }
     throw error;

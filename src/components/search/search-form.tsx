@@ -11,6 +11,8 @@ type SearchFormProps = {
 };
 
 const AUTO_SEARCH_DEBOUNCE_MS = 300;
+const CONTROL_CLASS =
+  "h-10 rounded-md border border-border bg-white px-3 text-sm text-foreground outline-none focus:border-foreground/60 dark:bg-card";
 
 function buildSearchHref(q: string, category: string): string {
   const params = new URLSearchParams();
@@ -99,59 +101,51 @@ export const SearchForm: React.FC<SearchFormProps> = ({
       ref={formRef}
       action={handleSubmit}
       aria-label="Article search"
-      className="flex flex-col gap-3 sm:flex-row sm:items-start"
+      className="flex flex-col gap-2"
     >
-      <div className="flex flex-1 flex-col gap-1">
-        <label
-          htmlFor="search-q"
-          className="font-eyebrow text-muted-foreground"
-        >
-          Search
-        </label>
-        <input
-          id="search-q"
-          name="q"
-          type="search"
-          defaultValue={defaultQ}
-          autoComplete="off"
-          aria-describedby="search-hint"
-          onChange={handleQueryChange}
-          className="rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-foreground/60"
-        />
-        <p id="search-hint" className="text-xs text-muted-foreground">
-          Results update automatically after 3 characters, or press Enter.
-        </p>
-      </div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+        <div className="flex flex-1 flex-col gap-1">
+          <label
+            htmlFor="search-q"
+            className="font-eyebrow text-muted-foreground"
+          >
+            Search
+          </label>
+          <input
+            id="search-q"
+            name="q"
+            type="search"
+            defaultValue={defaultQ}
+            autoComplete="off"
+            aria-describedby="search-hint"
+            onChange={handleQueryChange}
+            className={CONTROL_CLASS}
+          />
+        </div>
 
-      <div className="flex flex-col gap-1 sm:w-56">
-        <label
-          htmlFor="search-category"
-          className="font-eyebrow text-muted-foreground"
-        >
-          Category
-        </label>
-        <select
-          id="search-category"
-          name="category"
-          defaultValue={defaultCategory}
-          onChange={handleCategoryChange}
-          className="rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-foreground/60"
-        >
-          <option value="">All categories</option>
-          {categories.map((category) => (
-            <option key={category.slug} value={category.slug}>
-              {category.name}
-            </option>
-          ))}
-        </select>
-      </div>
+        <div className="flex flex-col gap-1 sm:w-56">
+          <label
+            htmlFor="search-category"
+            className="font-eyebrow text-muted-foreground"
+          >
+            Category
+          </label>
+          <select
+            id="search-category"
+            name="category"
+            defaultValue={defaultCategory}
+            onChange={handleCategoryChange}
+            className={CONTROL_CLASS}
+          >
+            <option value="">All categories</option>
+            {categories.map((category) => (
+              <option key={category.slug} value={category.slug}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
-      <div className="flex flex-col gap-1">
-        {/* Invisible label-height spacer so the button aligns with the inputs
-            on the same row, regardless of helper text below the search input. */}
-        <span aria-hidden className="font-eyebrow hidden sm:block">
-          &nbsp;
-        </span>
         <button
           type="submit"
           className="inline-flex h-10 items-center justify-center rounded-md bg-foreground px-4 text-sm font-medium text-background transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
@@ -159,6 +153,10 @@ export const SearchForm: React.FC<SearchFormProps> = ({
           Search
         </button>
       </div>
+
+      <p id="search-hint" className="text-xs text-muted-foreground">
+        Results update automatically after 3 characters, or press Enter.
+      </p>
     </form>
   );
 };

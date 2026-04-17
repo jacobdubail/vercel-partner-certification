@@ -26,7 +26,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
           className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
         />
       </div>
-      <div className="flex flex-1 flex-col gap-2 p-4">
+      <div className="flex flex-1 flex-col gap-3 p-5 lg:p-6">
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <span className="font-eyebrow rounded-full bg-secondary px-2 py-0.5 text-foreground">
             {article.category.replace("-", " ")}
@@ -35,7 +35,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
             {dateFormatter.format(publishedAt)}
           </time>
         </div>
-        <h3 className="line-clamp-2 min-h-[2lh] font-serif text-lg font-semibold leading-snug text-foreground">
+        <h3 className="line-clamp-2 font-serif text-lg font-semibold leading-snug text-foreground lg:min-h-[2lh]">
           <Link
             href={{ pathname: `/articles/${article.slug}` }}
             className="outline-none focus-visible:underline group-hover:underline"
@@ -44,7 +44,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
             <span aria-hidden className="absolute inset-0" />
           </Link>
         </h3>
-        <p className="line-clamp-2 min-h-[2lh] text-sm text-muted-foreground">
+        <p className="line-clamp-2 text-sm leading-6 text-muted-foreground lg:min-h-[2lh]">
           {article.excerpt}
         </p>
       </div>

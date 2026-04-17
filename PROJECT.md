@@ -20,9 +20,11 @@ A Next.js 16 App Router news site powered by the Vercel Daily News API
 | `/articles/[param]` (detail, `param` = id or slug) | ✅ implemented |
 
 
-Paywall / subscription flow is deliberately **stubbed** — `SubscribeCTA` and
-`HeaderActions` render disabled placeholders. The data-fetch seam (`ArticleBody`)
-is already in place for the future paywall.
+Subscription / paywall flow is now wired to the Vercel Daily subscription API.
+An `httpOnly` cookie stores the subscription token, `HeaderActions` can
+subscribe / unsubscribe, `ArticleBody` gates full article content based on the
+current subscription status, and `SubscribeCTA` hides itself for active
+subscribers.
 
 ---
 
@@ -72,14 +74,14 @@ Suspense skeleton shows on every nav — visible loading feedback.
 ### 3.3 Article detail (`/articles/[param]`)
 
 - `param` accepts either id or slug; `getArticle()` is id/slug-agnostic.
-- `notFound()` when the API returns null.
+- `notFound()` when the API returns null; custom `not-found.tsx` is implemented.
 - `generateMetadata()` populates SEO + Open Graph (`article` type, author,
 published time, image).
 - Layout:
   1. `ArticleHeader` — eyebrow category, h1 title, excerpt, author, date
   2. `FeaturedImage` — `next/image` with `priority`
   3. `ArticleBody` (thin wrapper around `ArticleContent` — **paywall seam**)
-  4. `SubscribeCTA` — full-width banner, currently disabled
+  4. `SubscribeCTA` — full-width banner shown only to non-subscribers
   5. `TrendingArticles` inside `Suspense` — 4 articles excluding current slug
 - Body is wrapped in `max-w-3xl` for prose readability.
 - `ArticleContent` renders typed `ContentBlock` unions:
@@ -139,6 +141,13 @@ Key fetchers:
 - `getHomeArticles()` — returns `{ hero, grid: Article[] }`, handles dedupe
 - `getTrendingArticles({ excludeSlug?, limit = 4 })`
 
+Subscription helpers live in `src/utilities/subscription.ts`:
+
+- `getSubscription()` — reads the `httpOnly` token cookie and asks the
+  subscription API for the user's current status (`cache: "no-store"`)
+- `createSubscription()`, `activateSubscription()`, `deactivateSubscription()`,
+  `fetchSubscription()` — thin wrappers around the subscription endpoints
+
 ### 4.3 Route data flow
 
 - Pages are async RSCs that don't `await` in the body — they render `<Suspense>` boundaries immediately.
@@ -190,6 +199,14 @@ Tokens defined on `:root` and `.dark` and exposed via `@theme inline`:
 - Max content width: `max-w-7xl` for grids, `max-w-3xl` for article prose.
 - Horizontal padding: `px-4 sm:px-10`.
 
+### 5.6 Error states
+
+- Route-level boundaries are implemented for `/`, `/search`, and
+  `/articles/[param]` via `error.tsx` files.
+- `src/app/global-error.tsx` handles root layout failures.
+- Shared fallback UI lives in `src/components/layout/error-fallback.tsx`.
+- `src/app/not-found.tsx` provides the custom 404 experience.
+
 ---
 
 ## 6. Environment
@@ -221,13 +238,13 @@ npx tsc --noEmit   # type check
 
 High-signal items for future sessions:
 
-1. **Subscription / paywall**
-  - Wire `HeaderActions` "Subscribe" button to real auth/signup flow.
-  - `ArticleBody` is already the seam for gated-content rendering.
-  - `SubscribeCTA` conditional visibility rules.
-2. **Tests** — no test harness yet. Consider Vitest + Playwright for E2E on the three routes.
-3. **Deploy** — Vercel deploy + `revalidateTag` hooks for `articles` / `breaking-news` tags.
-4. **Open Graph image generation** (`opengraph-image.tsx`).
+1. **Tests** — no test harness yet. Consider Vitest + Playwright for E2E on the three routes.
+2. **Deploy** — Vercel deploy + `revalidateTag` hooks for `articles` / `breaking-news` tags.
+3. **Open Graph image generation** (`opengraph-image.tsx`).
+4. **Subscription polish**
+  - Confirm whether the current token-based flow is sufficient for the exercise,
+    or whether a more explicit signup/auth experience is still desired.
+  - Consider whether subscribe/unsubscribe UX needs success/error messaging.
 
 ---
 
@@ -236,6 +253,10 @@ High-signal items for future sessions:
 - **Next.js 16 breaking changes.** APIs may differ from training data — read `node_modules/next/dist/docs/` before writing new route features.
 - `**typedRoutes`** complains about dynamic query strings. Current workaround: `// @ts-expect-error` on `router.replace(buildSearchHref(...))` in `search-form.tsx`.
 - `**cacheComponents**` means all data reads must be inside functions with `"use cache"`. Adding a fetch without that directive will break the build.
+- With `**cacheComponents**`, request-time APIs such as `cookies()`,
+  `usePathname()`, and awaited `searchParams` must live behind `Suspense`
+  boundaries or async leaves. Pulling them into the route shell causes blocking
+  route / prerender errors during `next build`.
 - `**react-markdown`'s image XSS vector.** The API corpus includes markdown like `![x](javascript:...)`. `InlineMarkdown` allowlists only `a`, `strong`, `em`, `code`. Don't relax this without a DOMPurify layer.
 - **Auto-search behavior.** 3-char minimum + 300ms debounce. Clearing the input (empty string) also triggers a search to reset results. Don't change to `onBlur` or form-only submit without confirming with the spec.
 
@@ -243,8 +264,8 @@ High-signal items for future sessions:
 
 ## 10. Git state at handoff
 
-- Branch: `cursor/news-site-scaffold`
+- Branch: `main`
 - Base: `main`
-- HEAD: `e1f2613` — *Scaffold Vercel Daily news site* (root commit, pushed to `origin`)
-- Tracking: set to `origin/cursor/news-site-scaffold`
+- HEAD: `dde4ac0` — *Wire subscription API, add error boundaries, and not-found page*
+- Tracking: set to `origin/main`
 

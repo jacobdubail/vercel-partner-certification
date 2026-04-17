@@ -15,6 +15,11 @@ import { getSubscription } from "@/utilities/subscription";
 const BUTTON_CLASS =
   "font-eyebrow inline-flex h-9 items-center justify-center rounded-md bg-foreground px-3 text-background transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground disabled:opacity-60";
 
+/* TODO: Consider useOptimistic 
+ * Optimistic update for the button and a loading state for the 
+ * article body would be nice. The current request roundtrips feel
+ * a bit slow.
+ */
 export const HeaderActions: React.FC = async () => {
   const { isSubscribed } = await getSubscription();
 

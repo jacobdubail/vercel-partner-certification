@@ -16,9 +16,9 @@ export const Hero: React.FC = async () => {
   }
 
   return (
-    <section className="border-b border-border bg-card">
-      <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 py-12 sm:px-10 lg:flex-row lg:items-center lg:gap-12 lg:py-20">
-        <div className="flex flex-1 flex-col gap-4">
+    <section className="border-b border-border bg-background lg:grid lg:grid-cols-[minmax(0,1fr)_50vw] lg:items-stretch lg:bg-card">
+      <div className="px-4 py-12 sm:px-10 lg:px-0 lg:py-20">
+        <div className="flex flex-col gap-4 lg:ml-auto lg:max-w-[40rem] lg:py-8 lg:pl-10 lg:pr-16">
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
             <span className="font-eyebrow rounded-full bg-secondary px-3 py-1 text-foreground">
               {hero.category.replace("-", " ")}
@@ -36,21 +36,23 @@ export const Hero: React.FC = async () => {
           <div>
             <Link
               href={{ pathname: `/articles/${hero.slug}` }}
-              className="inline-flex items-center gap-2 rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background transition-opacity hover:opacity-90"
+              className="inline-flex items-center gap-2 rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
             >
               Read the story
               <span aria-hidden>→</span>
             </Link>
           </div>
         </div>
-        <div className="relative aspect-[16/10] w-full overflow-hidden rounded-lg border border-border lg:flex-1">
+      </div>
+      <div className="pb-12 lg:px-0 lg:py-20 lg:pl-0">
+        <div className="relative aspect-[16/10] w-full overflow-hidden lg:min-h-[30rem] lg:rounded-l-2xl lg:rounded-r-none lg:border lg:border-border lg:border-r-0 lg:bg-white dark:lg:bg-card lg:p-2">
           <Image
             src={hero.image}
             alt={hero.title}
             fill
             priority
             sizes="(min-width: 1024px) 50vw, 100vw"
-            className="object-cover"
+            className="object-contain"
           />
         </div>
       </div>

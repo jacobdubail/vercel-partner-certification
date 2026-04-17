@@ -1,8 +1,6 @@
-import React from "react";
-
 export const Footer: React.FC = () => {
   return (
-    <footer className="border-t border-zinc-200 bg-white py-6 text-center text-sm text-zinc-600 dark:border-zinc-800 dark:bg-black dark:text-zinc-400">
+    <footer className="border-t border-border bg-white py-6 text-center text-sm text-muted-foreground dark:bg-card">
       Vercel Partner Certification
     </footer>
   );
