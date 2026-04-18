@@ -52,6 +52,9 @@ const Block: React.FC<{ block: ContentBlock }> = ({ block }) => {
         </ol>
       );
     case "image":
+			if (!block.src.trim().length) {
+				return null;
+			}
       return (
         <figure className="my-2">
           <div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg border border-border bg-secondary">

@@ -9,6 +9,7 @@ import { SubscribeCTA } from "@/components/article/subscribe-cta";
 import { TrendingArticles } from "@/components/trending/trending-articles";
 import { TrendingArticlesSkeleton } from "@/components/trending/trending-articles-skeleton";
 import { getAllArticleSlugs, getArticle } from "@/utilities/articles";
+import { preloadSubscription } from "@/utilities/subscription";
 
 type ArticlePageProps = {
   params: Promise<{ param: string }>;
@@ -47,7 +48,9 @@ export async function generateMetadata({
 
 export default async function ArticlePage({ params }: ArticlePageProps) {
   const { param } = await params;
-  const article = await getArticle(param);
+  const articlePromise = getArticle(param);
+  preloadSubscription();
+  const article = await articlePromise;
 
   if (!article) {
     notFound();

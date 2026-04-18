@@ -1,5 +1,5 @@
-import { subscribe } from "@/app/actions/subscription";
 import { SubscribeButton } from "@/components/article/subscribe-button";
+import { SubscribeForm } from "@/components/subscription/subscribe-form";
 import { getSubscription } from "@/utilities/subscription";
 
 /**
@@ -30,15 +30,12 @@ export const SubscribeCTA: React.FC = async () => {
           Unlock the full article plus every changelog release, engineering
           deep-dive, and customer story we publish.
         </p>
-        <form
-          action={subscribe}
-          aria-label="Subscribe to read the rest of this article"
-        >
+        <SubscribeForm ariaLabel="Subscribe to read the rest of this article">
           <SubscribeButton
             label="Subscribe to Vercel Daily"
             className="font-eyebrow inline-flex h-10 items-center justify-center rounded-md bg-background px-5 text-foreground transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-background disabled:opacity-60"
           />
-        </form>
+        </SubscribeForm>
       </div>
     </aside>
   );

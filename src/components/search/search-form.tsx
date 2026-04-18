@@ -1,11 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { Suspense, use, useEffect, useRef } from "react";
 import type { Category } from "@/utilities/articles";
 
 type SearchFormProps = {
-  categories: Category[];
+  categoriesPromise: Promise<Category[]>;
   defaultQ: string;
   defaultCategory: string;
 };
@@ -22,8 +22,39 @@ function buildSearchHref(q: string, category: string): string {
   return qs ? `/search?${qs}` : "/search";
 }
 
+type CategorySelectProps = {
+  categoriesPromise: Promise<Category[]>;
+  defaultCategory: string;
+  handleCategoryChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+};
+
+function CategorySelect({
+  categoriesPromise,
+  defaultCategory,
+  handleCategoryChange,
+}: CategorySelectProps) {
+  const categories = use(categoriesPromise);
+
+  return (
+    <select
+      id="search-category"
+      name="category"
+      defaultValue={defaultCategory}
+      onChange={handleCategoryChange}
+      className={CONTROL_CLASS}
+    >
+      <option value="">All categories</option>
+      {categories.map((category) => (
+        <option key={category.slug} value={category.slug}>
+          {category.name}
+        </option>
+      ))}
+    </select>
+  );
+}
+
 export const SearchForm: React.FC<SearchFormProps> = ({
-  categories,
+  categoriesPromise,
   defaultQ,
   defaultCategory,
 }) => {
@@ -130,20 +161,28 @@ export const SearchForm: React.FC<SearchFormProps> = ({
           >
             Category
           </label>
-          <select
-            id="search-category"
-            name="category"
-            defaultValue={defaultCategory}
-            onChange={handleCategoryChange}
-            className={CONTROL_CLASS}
+          <Suspense
+            fallback={
+              <select
+                id="search-category"
+                name="category"
+                defaultValue={defaultCategory}
+                disabled
+                aria-disabled
+                className={CONTROL_CLASS}
+              >
+                <option value="">
+                  {defaultCategory ? "Loading category..." : "Loading categories..."}
+                </option>
+              </select>
+            }
           >
-            <option value="">All categories</option>
-            {categories.map((category) => (
-              <option key={category.slug} value={category.slug}>
-                {category.name}
-              </option>
-            ))}
-          </select>
+            <CategorySelect
+              categoriesPromise={categoriesPromise}
+              defaultCategory={defaultCategory}
+              handleCategoryChange={handleCategoryChange}
+            />
+          </Suspense>
         </div>
 
         <button

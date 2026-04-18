@@ -1,59 +1,49 @@
-import Image from "next/image";
 import Link from "next/link";
-import { getHomeArticles } from "@/utilities/articles";
-
-const dateFormatter = new Intl.DateTimeFormat("en-US", {
-  year: "numeric",
-  month: "long",
-  day: "numeric",
-});
+import { SubscribeButton } from "@/components/article/subscribe-button";
+import { SubscribeForm } from "@/components/subscription/subscribe-form";
+import { getPublicationConfig } from "@/utilities/publication";
+import { getSubscription } from "@/utilities/subscription";
 
 export const Hero: React.FC = async () => {
-  const { hero } = await getHomeArticles();
-
-  if (!hero) {
-    return null;
-  }
+  const [{ isSubscribed }, publication] = await Promise.all([
+    getSubscription(),
+    getPublicationConfig(),
+  ]);
 
   return (
-    <section className="border-b border-border bg-background lg:grid lg:grid-cols-[minmax(0,1fr)_50vw] lg:items-stretch lg:bg-card">
-      <div className="px-4 py-12 sm:px-10 lg:px-0 lg:py-20">
-        <div className="flex flex-col gap-4 lg:ml-auto lg:max-w-[40rem] lg:py-8 lg:pl-10 lg:pr-16">
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
-            <span className="font-eyebrow rounded-full bg-secondary px-3 py-1 text-foreground">
-              {hero.category.replace("-", " ")}
-            </span>
-            <time dateTime={hero.publishedAt}>
-              {dateFormatter.format(new Date(hero.publishedAt))}
-            </time>
-          </div>
-          <h1 className="font-serif text-3xl font-semibold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-            {hero.title}
+    <section className="border-b border-border bg-background">
+      <div className="mx-auto max-w-7xl px-4 py-14 sm:px-10 lg:py-24">
+        <div className="flex max-w-3xl flex-col gap-5">
+          <span className="font-eyebrow text-muted-foreground">
+            {publication.publicationName}
+          </span>
+          <h1 className="font-serif text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+            News and insights for modern web developers.
           </h1>
-          <p className="max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            {hero.excerpt}
+          <p className="max-w-3xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
+            {publication.seo.defaultDescription}
           </p>
-          <div>
+          <div className="flex flex-wrap gap-3 pt-2">
             <Link
-              href={{ pathname: `/articles/${hero.slug}` }}
-              className="inline-flex items-center gap-2 rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+              href={{ pathname: "/search" }}
+              className="inline-flex h-11 items-center gap-2 rounded-full bg-foreground px-5 text-sm font-medium text-background transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
             >
-              Read the story
+              Browse articles
               <span aria-hidden>→</span>
             </Link>
+            {isSubscribed ? (
+              <span className="font-eyebrow inline-flex h-11 items-center justify-center rounded-full border border-border bg-card px-5 text-foreground">
+                Subscribed
+              </span>
+            ) : (
+              <SubscribeForm ariaLabel="Subscribe to Vercel Daily from the homepage hero">
+                <SubscribeButton
+                  label="Subscribe"
+                  className="font-eyebrow inline-flex h-11 items-center justify-center rounded-full border border-border bg-card px-5 text-foreground transition-colors hover:bg-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground disabled:opacity-60"
+                />
+              </SubscribeForm>
+            )}
           </div>
-        </div>
-      </div>
-      <div className="pb-12 lg:px-0 lg:py-20 lg:pl-0">
-        <div className="relative aspect-[16/10] w-full overflow-hidden lg:min-h-[30rem] lg:rounded-l-2xl lg:rounded-r-none lg:border lg:border-border lg:border-r-0 lg:bg-white dark:lg:bg-card lg:p-2">
-          <Image
-            src={hero.image}
-            alt={hero.title}
-            priority
-						fill
-            sizes="(min-width: 1024px) 50vw, 100vw"
-            className="object-contain"
-          />
         </div>
       </div>
     </section>

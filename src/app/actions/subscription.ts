@@ -5,6 +5,8 @@ import { cookies } from "next/headers";
 import { ApiResponseError } from "@/utilities/api";
 import {
   activateSubscription,
+  cacheSubscriptionStatus,
+  clearSubscriptionStatus,
   createSubscription,
   deactivateSubscription,
   SUBSCRIPTION_TOKEN_COOKIE,
@@ -26,8 +28,6 @@ const COOKIE_OPTIONS = {
   sameSite: "lax",
   secure: process.env.NODE_ENV === "production",
   path: "/",
-  // One year — the token is a stable handle; activation state lives server-side.
-  maxAge: 60 * 60 * 24 * 365,
 } as const;
 
 export async function subscribe() {
@@ -37,6 +37,7 @@ export async function subscribe() {
   if (existingToken) {
     try {
       await activateSubscription(existingToken);
+      cacheSubscriptionStatus(existingToken, true);
       refresh();
       return;
     } catch (error) {
@@ -51,6 +52,7 @@ export async function subscribe() {
   const record = await createSubscription();
   await activateSubscription(record.token);
   store.set(SUBSCRIPTION_TOKEN_COOKIE, record.token, COOKIE_OPTIONS);
+  cacheSubscriptionStatus(record.token, true);
   refresh();
 }
 
@@ -64,10 +66,12 @@ export async function unsubscribe() {
 
   try {
     await deactivateSubscription(token);
+    cacheSubscriptionStatus(token, false);
     refresh();
   } catch (error) {
     if (error instanceof ApiResponseError && error.status === 404) {
       store.delete(SUBSCRIPTION_TOKEN_COOKIE);
+      clearSubscriptionStatus(token);
       refresh();
       return;
     }

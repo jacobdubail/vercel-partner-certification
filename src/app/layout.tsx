@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Source_Sans_3 } from "next/font/google";
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
+import { SubscriptionPendingProvider } from "@/components/subscription/subscription-pending-provider";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { getPublicationConfig } from "@/utilities/publication";
 import "./globals.css";
@@ -59,9 +60,19 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
+          <SubscriptionPendingProvider>
+            <Header />
+            <main className="flex-1">{children}</main>
+            <Suspense
+              fallback={
+                <footer className="border-t border-border bg-white py-6 text-center text-sm text-muted-foreground dark:bg-card">
+                  &copy; Vercel Daily News. All rights reserved.
+                </footer>
+              }
+            >
+              <Footer />
+            </Suspense>
+          </SubscriptionPendingProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -10,11 +10,9 @@ export const FilterForm: React.FC<FilterFormProps> = async ({
   defaultQ,
   defaultCategory,
 }) => {
-  const categories = await getCategories();
-
   return (
     <SearchForm
-      categories={categories}
+      categoriesPromise={getCategories()}
       defaultQ={defaultQ}
       defaultCategory={defaultCategory}
     />

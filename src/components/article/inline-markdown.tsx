@@ -4,6 +4,16 @@ type InlineMarkdownProps = {
   text: string;
 };
 
+function normalizeInlineMarkdown(text: string): string {
+  return text
+    .replace(/\*\*([^*\n]+?)(\s+)\*\*(?=\S)/g, (_match, content) => {
+      return `**${content}** `;
+    })
+    .replace(/\*([^*\n]+?)(\s+)\*(?=\S)/g, (_match, content) => {
+      return `*${content}* `;
+    });
+}
+
 /**
  * Renders inline markdown for article body text fields (paragraphs, list items,
  * blockquotes). Allowlist is intentionally narrow:
@@ -31,6 +41,10 @@ export const InlineMarkdown: React.FC<InlineMarkdownProps> = ({ text }) => {
             {children}
           </a>
         ),
+        strong: ({ children }) => (
+          <strong className="font-semibold text-foreground">{children}</strong>
+        ),
+        em: ({ children }) => <em className="italic">{children}</em>,
         code: ({ children }) => (
           <code className="rounded bg-secondary px-1 py-0.5 font-mono text-[0.9em] text-foreground">
             {children}
@@ -38,7 +52,7 @@ export const InlineMarkdown: React.FC<InlineMarkdownProps> = ({ text }) => {
         ),
       }}
     >
-      {text}
+      {normalizeInlineMarkdown(text)}
     </Markdown>
   );
 };

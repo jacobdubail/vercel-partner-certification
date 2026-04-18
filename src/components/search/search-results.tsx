@@ -1,33 +1,20 @@
 import { ArticleCard } from "@/components/article-card/article-card";
-import { getArticles, type CategorySlug } from "@/utilities/articles";
+import { getArticles } from "@/utilities/articles";
 
 type SearchResultsProps = {
   q: string;
   category: string;
 };
 
-const KNOWN_CATEGORIES: CategorySlug[] = [
-  "changelog",
-  "engineering",
-  "customers",
-  "company-news",
-  "community",
-];
-
-function isKnownCategory(value: string): value is CategorySlug {
-  return (KNOWN_CATEGORIES as string[]).includes(value);
-}
-
 export const SearchResults: React.FC<SearchResultsProps> = async ({
   q,
   category,
 }) => {
   const hasQuery = q.length > 0 || category.length > 0;
-  const safeCategory = isKnownCategory(category) ? category : undefined;
 
   const response = await getArticles({
     search: q || undefined,
-    category: safeCategory,
+    category: category || undefined,
     limit: hasQuery ? 5 : 6,
   });
 

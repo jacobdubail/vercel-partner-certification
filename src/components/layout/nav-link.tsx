@@ -25,10 +25,10 @@ export const NavLink: React.FC<NavLinkProps> = ({
     <Link
       href={href}
       aria-current={isActive ? "page" : undefined}
-      className={`text-sm font-medium transition-colors ${
+      className={`inline-flex h-9 items-center justify-center rounded-full px-4 text-sm font-medium transition-colors ${
         isActive
-          ? "text-foreground"
-          : "text-muted-foreground hover:text-foreground"
+          ? "bg-secondary text-foreground"
+          : "text-muted-foreground hover:bg-secondary/70 hover:text-foreground"
       }`}
     >
       {children}

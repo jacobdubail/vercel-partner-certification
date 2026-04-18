@@ -14,12 +14,7 @@ export type ContentBlock =
   | { type: "ordered-list"; items: string[] }
   | { type: "image"; src: string; alt: string; caption?: string };
 
-export type CategorySlug =
-  | "changelog"
-  | "engineering"
-  | "customers"
-  | "company-news"
-  | "community";
+export type CategorySlug = string;
 
 export type Article = {
   id: string;
@@ -191,30 +186,16 @@ export async function getTrendingArticles({
 }
 
 /**
- * Source of truth for the homepage article data. Picks a hero (featured[0] with
- * latest[0] fallback) and returns a deduped grid of six latest articles that
- * never includes the hero. Over-fetches by one so the grid stays size-6 even
- * when the hero is present in the latest list.
+ * Source of truth for the homepage article grid. Returns exactly six recent
+ * articles for the featured section.
  */
-export async function getHomeArticles(): Promise<{
-  hero: Article | null;
-  grid: Article[];
-}> {
+export async function getHomeArticles(): Promise<Article[]> {
   "use cache";
   cacheLife("hours");
   cacheTag("articles");
 
-  const [featuredRes, latestRes] = await Promise.all([
-    getArticles({ featured: "true", limit: 1 }),
-    getArticles({ limit: 7 }),
-  ]);
-
-  const hero = featuredRes.data[0] ?? latestRes.data[0] ?? null;
-  const grid = latestRes.data
-    .filter((article) => article.slug !== hero?.slug)
-    .slice(0, 6);
-
-  return { hero, grid };
+  const latestRes = await getArticles({ limit: 6 });
+  return latestRes.data;
 }
 
 /**

@@ -50,7 +50,7 @@ export const ThemeToggle: React.FC = () => {
         type="button"
         aria-hidden
         tabIndex={-1}
-        className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border text-muted-foreground"
+        className="cursor-pointer inline-flex h-9 w-9 items-center justify-center rounded-md border border-border text-muted-foreground"
       />
     );
   }
@@ -64,7 +64,7 @@ export const ThemeToggle: React.FC = () => {
       onClick={() => setTheme(next)}
       aria-label={`Switch to ${next} theme`}
       title={`Switch to ${next} theme`}
-      className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+      className="cursor-pointer inline-flex h-9 w-9 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
     >
       {isDark ? <SunIcon /> : <MoonIcon />}
     </button>
