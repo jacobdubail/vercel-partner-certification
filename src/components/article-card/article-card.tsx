@@ -6,6 +6,9 @@ type ArticleCardProps = {
   article: Article;
 };
 
+const ARTICLE_CARD_IMAGE_SIZES =
+  "(min-width: 1280px) 411px, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw";
+
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
   year: "numeric",
   month: "short",
@@ -22,7 +25,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article }) => {
           src={article.image}
           alt={article.title}
           fill
-          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+          sizes={ARTICLE_CARD_IMAGE_SIZES}
           className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
         />
       </div>
