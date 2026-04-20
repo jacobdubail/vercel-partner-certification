@@ -12,17 +12,6 @@ import {
   SUBSCRIPTION_TOKEN_COOKIE,
 } from "@/utilities/subscription";
 
-/**
- * Server Actions for the Vercel Daily News subscription API. The token is a
- * long-lived identifier stored in an `httpOnly` cookie — we keep it across
- * unsubscribes so a repeat visitor reactivates their existing subscription
- * instead of accumulating abandoned tokens.
- *
- * After mutating the remote subscription state, we call `refresh()` so the
- * current route's server-rendered leaves (header actions, paywall seam, CTA)
- * re-read cookies + API state immediately.
- */
-
 const COOKIE_OPTIONS = {
   httpOnly: true,
   sameSite: "lax",

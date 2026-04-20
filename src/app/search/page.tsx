@@ -35,12 +35,6 @@ function FilterFormSkeleton() {
   );
 }
 
-/**
- * Thin async wrappers around each child of the Suspense boundaries below.
- * Awaiting `searchParams` at the page level would block prerendering the
- * whole route under `cacheComponents`; by moving the await into Suspense
- * leaves, the static shell (heading, layout, skeletons) streams immediately.
- */
 async function FilterFormAsync({
   searchParams,
 }: {
@@ -64,13 +58,6 @@ async function SearchResultsAsync({
   const q = (rawQ ?? "").trim();
   const category = (rawCategory ?? "").trim();
 
-  /**
-   * Key the inner Suspense boundary by the current search state so every
-   * router.replace on `/search` remounts the results subtree and shows the
-   * fallback immediately. Without this, React can keep the previous results
-   * visible while the new async payload resolves, which weakens the required
-   * "visual feedback while a search is being performed" behavior.
-   */
   return (
     <Suspense key={`${q}|${category}`} fallback={<SearchResultsSkeleton />}>
       <SearchResults q={q} category={category} />

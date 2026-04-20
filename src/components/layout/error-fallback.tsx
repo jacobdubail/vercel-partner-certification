@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
 
 type ErrorFallbackProps = {
   title: string;
@@ -11,15 +10,6 @@ type ErrorFallbackProps = {
   homeHref?: string;
 };
 
-/**
- * Shared UI for every route-level `error.tsx`. Logs the error's digest on
- * mount (so the user has something to hand to support) and exposes a `reset`
- * action plus a safe escape hatch back to the homepage.
- *
- * Kept visually aligned with `not-found.tsx` — eyebrow label, serif headline,
- * muted description, primary/secondary action row — so the site feels the same
- * across failure states.
- */
 export const ErrorFallback: React.FC<ErrorFallbackProps> = ({
   title,
   description,
@@ -27,10 +17,6 @@ export const ErrorFallback: React.FC<ErrorFallbackProps> = ({
   reset,
   homeHref = "/",
 }) => {
-  useEffect(() => {
-    console.error(error);
-  }, [error]);
-
   return (
     <section className="mx-auto flex max-w-3xl flex-col items-start gap-6 px-4 py-24 sm:px-10">
       <span className="font-eyebrow rounded-full bg-secondary px-3 py-1 text-foreground">

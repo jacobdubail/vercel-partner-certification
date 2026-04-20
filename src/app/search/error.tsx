@@ -2,10 +2,6 @@
 
 import { ErrorFallback } from "@/components/layout/error-fallback";
 
-/**
- * Route-level error boundary for `/search`. Keeps the header and footer
- * mounted so users can still navigate away without a full reload.
- */
 export default function SearchError({
   error,
   reset,

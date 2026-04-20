@@ -6,10 +6,6 @@ export const metadata: Metadata = {
   description: "The page you were looking for doesn't exist.",
 };
 
-/**
- * App-wide 404 handler. Renders for any `notFound()` call that isn't caught
- * by a nested `not-found.tsx` and for requests that don't match any route.
- */
 export default function NotFound() {
   return (
     <section className="mx-auto flex max-w-3xl flex-col items-start gap-6 px-4 py-24 sm:px-10">

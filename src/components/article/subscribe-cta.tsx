@@ -2,16 +2,6 @@ import { SubscribeButton } from "@/components/article/subscribe-button";
 import { SubscribeForm } from "@/components/subscription/subscribe-form";
 import { getSubscription } from "@/utilities/subscription";
 
-/**
- * Paywall CTA. Doubles as the visual "unlock" below the faded teaser in
- * `ArticleBody` — the negative top margin pulls the banner flush under the
- * fade so the gradient reads as a single unit with this banner. For
- * subscribers, this component is a no-op (returns null) so subscribed readers
- * see the article uninterrupted.
- *
- * Must be awaited inside a Suspense boundary on the article route because
- * `getSubscription()` reads cookies under `cacheComponents`.
- */
 export const SubscribeCTA: React.FC = async () => {
   const { isSubscribed } = await getSubscription();
 

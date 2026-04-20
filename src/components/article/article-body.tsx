@@ -6,11 +6,6 @@ type ArticleBodyProps = {
   article: Article;
 };
 
-/**
- * Takes the first N `paragraph` blocks from an article. Everything before the
- * first paragraph (heading, image, etc.) is intentionally dropped from the
- * teaser — the paywall is a prose tease, not a chrome tease.
- */
 const pickTeaserBlocks = (
   blocks: ContentBlock[],
   count: number,
@@ -25,15 +20,6 @@ const pickTeaserBlocks = (
   return teaser;
 };
 
-/**
- * Paywall seam. Reads subscription state server-side and decides how much of
- * the article to render. For guests, only the teaser blocks are ever passed to
- * `ArticleContent` — the gated blocks never enter the client tree, which is
- * the contract this component holds up.
- *
- * Must be awaited inside a Suspense boundary on the article route because
- * `getSubscription()` reads cookies (request-time API) under `cacheComponents`.
- */
 export const ArticleBody: React.FC<ArticleBodyProps> = async ({ article }) => {
   const { isSubscribed } = await getSubscription();
 

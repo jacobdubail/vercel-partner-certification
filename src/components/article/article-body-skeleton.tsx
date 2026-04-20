@@ -1,8 +1,3 @@
-/**
- * Suspense fallback for `ArticleBody` while the subscription cookie is being
- * read. Sized to roughly match the teaser layout (a short prose block) so the
- * fade + CTA below don't visibly jump when the real body streams in.
- */
 export const ArticleBodySkeleton: React.FC = () => {
   return (
     <div aria-hidden className="flex flex-col gap-3">

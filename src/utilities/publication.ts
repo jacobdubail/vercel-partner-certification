@@ -30,10 +30,6 @@ type PublicationConfigResponse = {
   data: PublicationConfig;
 };
 
-/**
- * Publication-level config used for canonical site metadata. This changes
- * rarely, so it can be cached aggressively and shared across routes.
- */
 export async function getPublicationConfig(): Promise<PublicationConfig> {
   "use cache";
   cacheLife("days");

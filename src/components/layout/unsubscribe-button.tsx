@@ -9,10 +9,6 @@ type UnsubscribeButtonProps = {
   showPendingIcon?: boolean;
 };
 
-/**
- * Header-only companion to `SubscribeButton`. Kept in `layout/` because the
- * paywall CTA never unsubscribes — that flow only lives in the header.
- */
 export const UnsubscribeButton: React.FC<UnsubscribeButtonProps> = ({
   className,
   showPendingIcon = false,

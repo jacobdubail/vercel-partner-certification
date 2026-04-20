@@ -2,12 +2,6 @@
 
 import { ErrorFallback } from "@/components/layout/error-fallback";
 
-/**
- * Route-level error boundary for `/articles/[param]`. `notFound()` is handled
- * separately by `not-found.tsx`; this catches actual render or fetch failures
- * (e.g. API outage) so the user sees a branded retry UI instead of a white
- * screen.
- */
 export default function ArticleError({
   error,
   reset,

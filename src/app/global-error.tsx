@@ -2,14 +2,6 @@
 
 import { useEffect } from "react";
 
-/**
- * Catastrophic fallback that replaces the entire root layout when the root
- * itself throws. Must render its own `<html>` and `<body>` and must not depend
- * on the theme provider or custom fonts — those live inside the layout that
- * just failed to render.
- *
- * Kept intentionally minimal: inline styles, system fonts, zero external UI.
- */
 export default function GlobalError({
   error,
   reset,

@@ -2,10 +2,6 @@
 
 import { ErrorFallback } from "@/components/layout/error-fallback";
 
-/**
- * Root error boundary. Catches render-time errors in `/` (homepage) and any
- * nested route that doesn't define its own `error.tsx`.
- */
 export default function RootError({
   error,
   reset,
