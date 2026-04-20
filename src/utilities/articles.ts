@@ -199,6 +199,18 @@ export async function getHomeArticles(): Promise<Article[]> {
 }
 
 /**
+ * Default article set for the `/search` landing state. Split into its own
+ * cached helper so the no-query experience has an explicit stable cache key.
+ */
+export async function getDefaultSearchArticles(): Promise<ArticleListResponse> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("articles");
+
+  return getArticles({ limit: 6 });
+}
+
+/**
  * Build-time helper for article-route SSG. Fetches every page of article list
  * data and returns the canonical slugs we link to throughout the app.
  */

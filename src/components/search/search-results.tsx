@@ -1,5 +1,5 @@
 import { ArticleCard } from "@/components/article-card/article-card";
-import { getArticles } from "@/utilities/articles";
+import { getArticles, getDefaultSearchArticles } from "@/utilities/articles";
 
 type SearchResultsProps = {
   q: string;
@@ -11,12 +11,13 @@ export const SearchResults: React.FC<SearchResultsProps> = async ({
   category,
 }) => {
   const hasQuery = q.length > 0 || category.length > 0;
-
-  const response = await getArticles({
-    search: q || undefined,
-    category: category || undefined,
-    limit: hasQuery ? 5 : 6,
-  });
+  const response = hasQuery
+    ? await getArticles({
+        search: q || undefined,
+        category: category || undefined,
+        limit: 5,
+      })
+    : await getDefaultSearchArticles();
 
   const articles = response.data;
   const heading = hasQuery

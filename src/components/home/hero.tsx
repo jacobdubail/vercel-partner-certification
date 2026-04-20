@@ -1,14 +1,45 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { SubscribeButton } from "@/components/article/subscribe-button";
 import { SubscribeForm } from "@/components/subscription/subscribe-form";
 import { getPublicationConfig } from "@/utilities/publication";
 import { getSubscription } from "@/utilities/subscription";
 
+const HERO_SECONDARY_ACTION_CLASS =
+  "font-eyebrow inline-flex h-11 items-center justify-center rounded-full border border-border bg-card px-5 text-foreground transition-colors hover:bg-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground disabled:opacity-60";
+
+const HeroSubscriptionFallback: React.FC = () => {
+  return (
+    <div
+      aria-hidden
+      className="h-11 w-32 animate-pulse rounded-full bg-secondary"
+    />
+  );
+};
+
+const HeroSubscriptionControl: React.FC = async () => {
+  const { isSubscribed } = await getSubscription();
+
+  if (isSubscribed) {
+    return (
+      <span className="font-eyebrow inline-flex h-11 items-center justify-center rounded-full border border-border bg-card px-5 text-foreground">
+        Subscribed
+      </span>
+    );
+  }
+
+  return (
+    <SubscribeForm ariaLabel="Subscribe to Vercel Daily from the homepage hero">
+      <SubscribeButton
+        label="Subscribe"
+        className={HERO_SECONDARY_ACTION_CLASS}
+      />
+    </SubscribeForm>
+  );
+};
+
 export const Hero: React.FC = async () => {
-  const [{ isSubscribed }, publication] = await Promise.all([
-    getSubscription(),
-    getPublicationConfig(),
-  ]);
+  const publication = await getPublicationConfig();
 
   return (
     <section className="border-b border-border bg-background">
@@ -31,18 +62,9 @@ export const Hero: React.FC = async () => {
               Browse articles
               <span aria-hidden>→</span>
             </Link>
-            {isSubscribed ? (
-              <span className="font-eyebrow inline-flex h-11 items-center justify-center rounded-full border border-border bg-card px-5 text-foreground">
-                Subscribed
-              </span>
-            ) : (
-              <SubscribeForm ariaLabel="Subscribe to Vercel Daily from the homepage hero">
-                <SubscribeButton
-                  label="Subscribe"
-                  className="font-eyebrow inline-flex h-11 items-center justify-center rounded-full border border-border bg-card px-5 text-foreground transition-colors hover:bg-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground disabled:opacity-60"
-                />
-              </SubscribeForm>
-            )}
+            <Suspense fallback={<HeroSubscriptionFallback />}>
+              <HeroSubscriptionControl />
+            </Suspense>
           </div>
         </div>
       </div>
